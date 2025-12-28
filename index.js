@@ -6,14 +6,25 @@ import axios from "axios";
 const app = express();
 const port = process.env.PORT || 3000;
 
+env.config();
+
 const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "book",
-  password: "Jacob@35",
-  port: 5432,
+  // If we are on Render, use the connection string they provide
+  connectionString: process.env.DATABASE_URL,
+  
+  // If we are on your Computer, use the variables from .env
+  user: process.env.user,
+  host: process.env.host,
+  database: process.env.name,
+  password: process.env.password,
+  port: process.env.port,
+  
+  // SSL logic: Only needed if there is a connection string (i.e., on Render)
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
+
 db.connect();
+export default db;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
