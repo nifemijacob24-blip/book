@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1><%= book.book_name %></h1>
+    <form action="/update" method="post" class="form">
+        <input value="<%=book.id%>" name="id" hidden>
+        <label>Title</label>
+        <input type="text" name="title" value="<%=book.book_name%>" >
+        <label>Author</label> 
+        <input type="text" name="author" value="<%=book.author%>">
+        <label>Book isbn (can search it on goggle)</label>
+        <input type="text" name="isbn" required value="<%=book.isbn%>">
+
+        <label>Rating (pick between 1-5)</label>
+        <input name="rating" type="number" value="<%=book.rating%>">
+        <label>Note:</label>
+        <textarea rows="20" cols="70" name="note" value="<%=book.note%>"><%=book.note%></textarea><br>
+        <input style="background-color: #FEB05D;" type="submit" value="Update" >
+    </form>
+</body>
+</html>

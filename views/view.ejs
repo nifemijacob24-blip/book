@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= book.book_name %></title>
+    <link rel="stylesheet" href="/style.css">
+
+</head>
+<body class="view">
+    <h1><%= book.book_name %></h1>
+    <p style=" text-align: center; width: 60vw;"><%=book.note%></p><br>
+    <div>
+        <a href="update/<%=book.id%>"><button>Update</button></a>
+        <a href="delete/<%=book.id%>"><button>Delete</button></a>
+    </div>
+</body>
+</html>

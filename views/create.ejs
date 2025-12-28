@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Every Create Book Starts With Word</h1>
+    <form action="/new" method="post" class="form">
+        <label>Title</label>
+        <input type="text" name="title" required>
+        <label>Author</label> 
+        <input type="text" name="author">
+        <label>Book isbn (can search it on goggle)</label>
+        <input type="text" name="isbn" required>
+
+        <label>Rating (pick between 1-5)</label>
+        <input name="rating" type="number">
+        <label>Note:</label>
+        <textarea rows="20" cols="70" name="note"></textarea><br>
+        <input style="background-color: #FEB05D;" type="submit">
+    </form>
+</body>
+</html>

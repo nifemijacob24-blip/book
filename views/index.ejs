@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find A Book</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Find A Book</h1>
+    <h2>Welcome To My List Of Books</h2>
+    <div class="sort">
+    <form action="/books" method="GET">
+        <label for="sort">Sort By:</label>
+        
+        <select name="sortType" id="sort">
+            <option value="">
+                <%if(!locals.type) {%>
+                    --select an option--
+                <% } else{%>
+                    <%= type%>
+                <% } %>
+            </option>
+            <option value="rating">Highest Rating</option>
+            <option value="title">Title (A-Z)</option>
+            <option value="date">Newest Added</option>
+        </select>
+
+        <button type="submit">Apply</button>
+    </form><br>
+
+    <a href="create"><button style="height: 30px;">CREATE NEW</button></a>
+    </div><br>
+
+    <%  data.forEach(element => { %>
+        <div class="book">
+            <img src="https://covers.openlibrary.org/b/isbn/<%= element.isbn%>-M.jpg">
+            <h3 style="color: #FEB05D;"><%= element.book_name %></h3>
+            <p><%= element.note.slice(0,200)  %> <a href="view/<%=element.id%>">Read more.</a></p>
+            <h4>Author:<%= element.author %></h4>
+            <h4>Rating: 
+                <% switch (element.rating) { 
+                    case 5: %>
+                        <%= '★★★★★' %>    
+                        <% break; 
+                    case 4: %>
+                        <%= '★★★★' %>
+                        <% break; 
+                    case 3: %>
+                        <%= '★★★' %>
+                        <% break; 
+                    case 2: %>
+                        <%= '★★' %>
+                        <% break; 
+                    case 1: %>
+                        <%= '★' %>
+                        <% break; 
+                    default: %>
+                        No Rating
+                        <% break; 
+                } %>
+            </h4>
+            <h4>DATE: <%=element.date%></h4>
+        </div><br>
+
+    <% }) %> 
+     
+   
+
+</body>
+</html>
