@@ -126,23 +126,51 @@ app.post('/update', async (req,res)=>{
   } 
 })
 
-// A secret route to set up the database
-app.get('/setup-database', async (req, res) => {
+
+app.get('/seed-database', async (req, res) => {
     try {
         await db.query(`
-            CREATE TABLE IF NOT EXISTS book (
-                id SERIAL PRIMARY KEY,
-                book_name VARCHAR(100),
-                author VARCHAR(100),
-                note TEXT,
-                rating INT,
-                isbn VARCHAR(20)
+            INSERT INTO book (book_name, author, isbn, rating, note) VALUES 
+            (
+                'Harry Potter and the Philosopher''s Stone', 
+                'J.K. Rowling', 
+                '9780747532743', 
+                5, 
+                'Rescued from the outrageous neglect of his aunt and uncle, a young boy with a great destiny proves his worth while attending Hogwarts School of Witchcraft and Wizardry. Harry discovers a world of magic, makes best friends with Ron and Hermione, and faces the dark wizard Voldemort who killed his parents. A classic tale of good versus evil that introduces the Wizarding World.'
+            ),
+            (
+                'The Hobbit', 
+                'J.R.R. Tolkien', 
+                '9780547928227', 
+                5, 
+                'Bilbo Baggins is a hobbit who enjoys a comfortable, unambitious life, rarely traveling further than the pantry of his hobbit-hole in Bag End. But his contentment is disturbed when the wizard Gandalf and a company of thirteen dwarves arrive on his doorstep one day to whisk him away on an unexpected journey "there and back again." They plot to raid the treasure hoard of Smaug the Magnificent, a large and very dangerous dragon.'
+            ),
+            (
+                '1984', 
+                'George Orwell', 
+                '9780451524935', 
+                4, 
+                'Among the seminal texts of the 20th century, Nineteen Eighty-Four is a rare work that grows more haunting as its futuristic purgatory becomes more real. Published in 1949, the book offers political satirist George Orwell''s nightmarish vision of a totalitarian, bureaucratic world and one poor stiff''s attempt to find individuality. The brilliance of the novel is Orwell''s prescience about modern life—the ubiquity of television, the distortion of the language—and his ability to construct such a thorough version of hell.'
+            ),
+            (
+                'The Great Gatsby', 
+                'F. Scott Fitzgerald', 
+                '9780743273565', 
+                3, 
+                'The Great Gatsby, F. Scott Fitzgerald''s third book, stands as the supreme achievement of his career. This exemplary novel of the Jazz Age has been acclaimed by generations of readers. The story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan, of lavish parties on Long Island at a time when The New York Times noted "gin was the national drink and sex the national obsession," it is an exquisitely crafted tale of America in the 1920s.'
+            ),
+            (
+                'Atomic Habits', 
+                'James Clear', 
+                '9780735211292', 
+                5, 
+                'No matter your goals, Atomic Habits offers a proven framework for improving--every day. James Clear, one of the world''s leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results. If you''re having trouble changing your habits, the problem isn''t you. The problem is your system.'
             );
         `);
-        res.send("Database Table Created Successfully!");
+        res.send("✅ Success! 5 Books with Summaries Added.");
     } catch (err) {
         console.error(err);
-        res.send("Error: " + err.message);
+        res.send("❌ Error: " + err.message);
     }
 });
 
