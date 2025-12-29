@@ -126,6 +126,15 @@ app.post('/update', async (req,res)=>{
   } 
 })
 
+app.get('/add-date-column', async (req, res) => {
+    try {
+        // Adds a column named 'date_added' and fills it with today's date automatically
+        await db.query('ALTER TABLE book ADD COLUMN date DATE DEFAULT CURRENT_DATE');
+        res.send("✅ Success! Date column added.");
+    } catch (err) {
+        res.send(err.message);
+    }
+});
 
 app.get('/seed-database', async (req, res) => {
     try {
