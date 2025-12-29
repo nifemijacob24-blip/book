@@ -126,6 +126,25 @@ app.post('/update', async (req,res)=>{
   } 
 })
 
+// A secret route to set up the database
+app.get('/setup-database', async (req, res) => {
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS book (
+                id SERIAL PRIMARY KEY,
+                book_name VARCHAR(100),
+                author VARCHAR(100),
+                note TEXT,
+                rating INT,
+                isbn VARCHAR(20)
+            );
+        `);
+        res.send("Database Table Created Successfully!");
+    } catch (err) {
+        console.error(err);
+        res.send("Error: " + err.message);
+    }
+});
 
 app.listen(port, ()=>{
     console.log('running on port 3000')
