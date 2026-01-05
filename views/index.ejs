@@ -8,8 +8,14 @@
 </head>
 <body>
     <h1>Find A Book</h1>
-    <h2>Welcome To My List Of Books</h2>
-    <div class="sort">
+    <h2>Welcome To My List Of Books</h2>   
+    <div class="sort"> 
+    <a href="create"><button style="height: 30px;">CREATE</button></a>
+    
+
+    <a href="logout"><button style="height: 30px;">Logout</button></a>
+    </div><br>
+
     <form action="/books" method="GET">
         <label for="sort">Sort By:</label>
         
@@ -28,9 +34,6 @@
 
         <button type="submit">Apply</button>
     </form><br>
-
-    <a href="create"><button style="height: 30px;">CREATE</button></a>
-    </div><br>
 
     <%  data.forEach(element => { %>
         <div class="book">

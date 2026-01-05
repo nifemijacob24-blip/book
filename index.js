@@ -3,9 +3,14 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import axios from "axios";
 import env from "dotenv";
+import bcrypt, { hash } from 'bcrypt'
+import session from 'express-session'
+import passport from "passport";
+import { Strategy } from "passport-local";
 
 const app = express();
 const port = process.env.PORT || 3000;
+const saltRounds = 10
 
 env.config();
 
@@ -19,11 +24,73 @@ db.connect();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-app.get('/', async (req,res)=>{
-    let result = db.query('SELECT * FROM book')
+app.use(session({
+  secret: process.env.session, // Required: used to sign the session ID cookie
+  resave: false, // Recommended: avoid race conditions
+  saveUninitialized: true, // Recommended: save login sessions, reduce storage
+  cookie: { maxAge: 60000*60*24 } // Session cookie valid for 1 minute
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/books', async (req,res)=>{
+  if(req.isAuthenticated()){
+    let user = req.user.id
+    let result = db.query('SELECT * FROM book WHERE book_id = $1', [user])
     let data = (await result).rows
+    console.log(data)
     res.render('index.ejs', {data:data})
+  }
+
 })
+
+app.get('/',async(req,res)=>{
+  res.render('home.ejs')
+})
+
+app.get('/register', async(req,res)=>{
+  res.render('register.ejs')
+})
+
+app.post('/register', async (req,res)=>{
+  let username = req.body.email
+  let pass = req.body.password
+
+  let findEmail = db.query('SELECT * FROM users WHERE username =$1',[username])
+  let found = (await findEmail).rows
+  console.log(found)
+  try {
+    if(found.length>0){
+    res.send('user already exist')
+    res.redirect('/register')
+    }else{
+      bcrypt.hash(pass, saltRounds, async(err,hash)=>{
+        if(err){
+          console.log(err)
+        }else{
+          await db.query('INSERT INTO users (username, password) VALUES ($1,$2)',[username,hash])
+          res.redirect('/login')
+        }
+      })
+    } 
+  } catch (error) {
+    console.log(err)
+    res.redirect('/register')
+  }
+  
+})
+
+app.get('/login',(req,res)=>{
+  res.render('login.ejs')
+})
+
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/books",
+    failureRedirect: "/login",
+  })
+);
 
 app.get('/books', async (req, res) => {
   try {
@@ -65,6 +132,15 @@ app.get('/create', async (req,res)=>{
   res.render('create.ejs')
 })
 
+app.get("/logout", (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
+
 app.post('/new', async (req,res)=>{
   let title = req.body.title
   let author = req.body.author
@@ -72,8 +148,9 @@ app.post('/new', async (req,res)=>{
   let isbn = isb.trim()
   let note = req.body.note
   let rating = req.body.rating
+  let user = req.user.id
   try {
-    await db.query('INSERT INTO book (book_name, author, note, rating, isbn) VALUES ($1,$2,$3,$4,$5)',[title,author,note,rating,isbn])
+    await db.query('INSERT INTO book (book_name, author, note, rating, isbn,book_id) VALUES ($1,$2,$3,$4,$5,$6)',[title,author,note,rating,isbn,user])
     res.redirect('/')
   } catch (error) {
     console.log(error)
@@ -181,6 +258,46 @@ app.get('/seed-database', async (req, res) => {
         console.error(err);
         res.send("❌ Error: " + err.message);
     }
+});
+
+passport.use(
+  "local",
+  new Strategy(async function verify(username, password, cb) {
+    try {
+      const result = await db.query("SELECT * FROM users WHERE username = $1 ", [
+        username,
+      ]);
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        const storedHashedPassword = user.password;
+        bcrypt.compare(password, storedHashedPassword, (err, valid) => {
+          if (err) {
+            console.error("Error comparing passwords:", err);
+            return cb(err);
+          } else {
+            if (valid) {
+              return cb(null, user);
+            } else {
+              return cb(null, false);
+            }
+          }
+        });
+      } else {
+        return cb("User not found");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  })
+);
+
+
+passport.serializeUser((user, cb) => {
+  cb(null, user);
+});
+
+passport.deserializeUser((user, cb) => {
+  cb(null, user);
 });
 
 app.listen(port, ()=>{
